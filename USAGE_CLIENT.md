@@ -43,7 +43,7 @@ node /absolute/path/to/harmony-evo-client/bin/harmony-evo-client.js install clau
 Then use Claude Code normally:
 
 ```bash
-ccb
+claude
 ```
 
 Ask, for example:

@@ -55,10 +55,10 @@ cd /path/to/your/harmonyos-app
 node /absolute/path/to/harmony-evo-client/bin/harmony-evo-client.js install claude --server http://SERVER_IP:3456 --upload-signals
 ```
 
-然后启动 Claude Code。本机默认命令是：
+然后启动 Claude Code。Claude Code 默认启动命令是：
 
 ```bash
-ccb
+claude
 ```
 
 安装后会写入：

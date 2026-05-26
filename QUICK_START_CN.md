@@ -60,7 +60,7 @@ node /absolute/path/to/harmony-evo-client-standalone/bin/harmony-evo-client.js i
 然后在业务项目目录里启动 Claude Code：
 
 ```bash
-ccb
+claude
 ```
 
 可以直接问：
