@@ -1,70 +1,76 @@
-# Harmony_Evo Server
+# Harmony_Evo 服务端
 
-This branch contains the server-side Harmony_Evo asset hub.
+这个分支是 Harmony_Evo 的服务端版本，用来管理团队共享的 HarmonyOS 案例资产。
 
-It manages HarmonyOS DebugCase assets, scraped raw candidates, dev-signal review queues, feedback, and GEP promotion into Gene/Capsule assets. Client adapters live on the `client` branch; the full monorepo lives on `main`.
+完整项目在 `main` 分支；独立客户端在 `client` 分支。
 
-## Current Snapshot
+## 功能介绍
 
-| Item | Status |
+- 案例库：管理结构化 DebugCase，支持错误码、关键词、信号标签搜索。
+- 采集：从华为开发者论坛采集候选问题，保存为 raw candidates。
+- 提取：把候选内容整理成 DebugCase。
+- 反馈：记录案例是否解决问题，沉淀成功/失败经验。
+- 上传队列：接收客户端提交的候选案例和事件级 dev-signal。
+- 进化：把高价值 DebugCase 提升为 Gene / Capsule，接入 evolver 资产。
+- 前端看板：提供案例库、采集、信号、进化状态等页面。
+
+## 当前状态
+
+| 项目 | 状态 |
 | --- | --- |
-| Local API | `http://localhost:3456` |
-| DebugCases | 187 valid cases |
-| Raw Candidates | 213 |
-| Dev Signals | 40 |
-| Harmony Genes | 3 |
-| Evolver | connected |
+| 本地服务 | `http://localhost:3456` |
+| DebugCase | 187 条 |
+| Raw Candidates | 213 条 |
+| Dev Signals | 40 条 |
+| Harmony Gene | 3 个 |
+| Evolver | 已连接 |
 
-## Start
+## 启动
 
 ```bash
 npm install
 npm run server
 ```
 
-Open:
+浏览器打开：
 
 ```text
 http://localhost:3456
 ```
 
-## Verify
+## 常用命令
 
 ```bash
 npm test
 npm run test:functional
 npm run quality
 npm run status
+npm run scrape -- --count 30
+npm run extract
+npm run promote -- --auto
 ```
 
-## Main APIs
+## 主要接口
 
-- `GET /api/stats`
-- `GET /api/search?q=...`
-- `GET /api/cases`
-- `GET /api/cases/:id`
-- `POST /api/cases/:id/match`
-- `POST /api/feedback/:id`
-- `GET /api/scrape/status`
-- `POST /api/scrape`
-- `GET /api/evolver`
-- `POST /api/promote/:id`
-- `POST /api/submissions`
-- `GET /api/submissions`
-- `POST /api/dev-signals`
-- `GET /api/dev-signals`
-- `GET /api/health`
+- `GET /api/stats`：总览统计。
+- `GET /api/search?q=...`：搜索案例。
+- `GET /api/cases`：案例列表。
+- `POST /api/scrape`：启动采集。
+- `GET /api/evolver`：进化资产状态。
+- `POST /api/submissions`：客户端候选案例上传。
+- `POST /api/dev-signals`：客户端事件级信号上传。
+- `GET /api/health`：系统健康状态。
 
-## Documentation
+## 文档
 
-- `USAGE_SERVER.md`: server operation guide.
-- `PRODUCT.md`: product design and roadmap.
-- `docs/HARMONY_EVO_STATUS_REVIEW.md`: status review.
-- `docs/SERVER_CLIENT_ASSET_HUB_PLAN.md`: server/client asset hub plan.
+- `USAGE_SERVER.md`：服务端使用说明。
+- `PRODUCT.md`：产品方案。
+- `docs/HARMONY_EVO_STATUS_REVIEW.md`：项目现状 review。
+- `docs/SERVER_CLIENT_ASSET_HUB_PLAN.md`：服务端/客户端规划。
 
-## Data Safety
+## 安全说明
 
-Runtime credentials are intentionally not tracked:
+不会提交本地账号、密码和会话文件：
 
 - `.env`
 - `.forum_session_storage.json`
@@ -72,4 +78,4 @@ Runtime credentials are intentionally not tracked:
 - `.opencode/`
 - `node_modules/`
 
-Uploaded submissions and dev-signals are stored as review queues and are not automatically promoted into the official case library.
+客户端上传内容会先进入审核队列，不会直接变成正式案例。
