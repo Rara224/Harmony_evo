@@ -1,0 +1,18 @@
+{
+  "timestamp": "2026-05-26T01:59:17.058Z",
+  "quality_score": 0.7,
+  "library_size": "healthy",
+  "evolution": "active",
+  "feedback_success_rate": "50%",
+  "metrics": {
+    "total_cases": 187,
+    "search_activity": 175,
+    "feedback_total": 2,
+    "feedback_success": 1,
+    "promoted": 3,
+    "scraper_runs": 4
+  },
+  "recommendations": [
+    "System is healthy — continue scraping and team usage"
+  ]
+}

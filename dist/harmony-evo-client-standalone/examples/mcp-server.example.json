@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "harmony-evo": {
+      "command": "node",
+      "args": [
+        "/absolute/path/to/harmony-evo-client-standalone/bin/harmony-evo-client.js",
+        "mcp"
+      ],
+      "env": {
+        "HARMONY_EVO_SERVER": "http://SERVER_IP:3456",
+        "HARMONY_EVO_TOKEN": ""
+      }
+    }
+  }
+}

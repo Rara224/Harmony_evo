@@ -1,0 +1,12 @@
+{
+  "version": 22,
+  "current": {
+    "type": "PersonalityState",
+    "rigor": 0.7,
+    "creativity": 0.8000000000000002,
+    "risk_tolerance": 0.4
+  },
+  "intent": "optimize",
+  "strategy": "steady",
+  "updated_at": "2026-05-24T16:59:38.783Z"
+}

@@ -1,0 +1,8 @@
+{
+  "serverUrl": "http://SERVER_IP:3456",
+  "token": "",
+  "top": 3,
+  "minScore": 1,
+  "uploadSignals": false,
+  "autoSubmit": false
+}

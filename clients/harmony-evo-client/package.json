@@ -1,0 +1,16 @@
+{
+  "name": "@harmony-evo/client",
+  "version": "0.1.0",
+  "description": "Local hook and MCP client for Harmony_Evo asset hub",
+  "type": "commonjs",
+  "bin": {
+    "harmony-evo-client": "bin/harmony-evo-client.js"
+  },
+  "scripts": {
+    "self-test": "node bin/harmony-evo-client.js self-test"
+  },
+  "license": "ISC",
+  "engines": {
+    "node": ">=18"
+  }
+}

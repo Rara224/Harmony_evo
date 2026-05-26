@@ -1,0 +1,153 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "harmony-evo-debug-case",
+  "title": "HarmonyOS Debug Case",
+  "description": "Structured representation of a resolved bug/fix case from HarmonyOS development",
+  "type": "object",
+  "required": ["dc_id", "source", "title", "symptom", "root_cause", "fix", "tags"],
+  "properties": {
+    "dc_id": {
+      "type": "string",
+      "pattern": "^dc_(hm|gh|git)_[a-z0-9_]+$",
+      "description": "Unique case ID: dc_hm_xxx (huawei forum), dc_gh_xxx (github), dc_git_xxx (local git)"
+    },
+    "source": {
+      "type": "string",
+      "enum": ["huawei_forum", "github_issue", "local_git", "manual"],
+      "description": "Where this case originated"
+    },
+    "source_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Original URL of the forum post / issue"
+    },
+    "title": {
+      "type": "string",
+      "description": "Short human-readable title of the bug"
+    },
+    "symptom": {
+      "type": "object",
+      "required": ["error_signals", "error_message", "scenario"],
+      "properties": {
+        "error_signals": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Machine-matchable error signals (e.g. push_token_null, 907135702)"
+        },
+        "error_code": {
+          "type": "string",
+          "description": "HarmonyOS specific error code (e.g. 907135702)"
+        },
+        "error_message": {
+          "type": "string",
+          "description": "The raw error message or log excerpt"
+        },
+        "observed_environment": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Devices, OS versions, API levels where this was observed"
+        },
+        "scenario": {
+          "type": "string",
+          "description": "What the developer was doing when the error occurred"
+        }
+      }
+    },
+    "root_cause": {
+      "type": "object",
+      "required": ["category", "analysis"],
+      "properties": {
+        "category": {
+          "type": "string",
+          "enum": [
+            "api_usage", "permission", "ui_ux", "performance",
+            "build_compile", "device_compat", "network", "data_storage",
+            "security", "third_party", "configuration", "other"
+          ],
+          "description": "Classification of the root cause"
+        },
+        "analysis": {
+          "type": "string",
+          "description": "Human-readable root cause analysis"
+        },
+        "related_api": {
+          "type": "string",
+          "description": "The HarmonyOS API or component involved"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Confidence in the root cause analysis"
+        }
+      }
+    },
+    "fix": {
+      "type": "object",
+      "required": ["strategy", "description"],
+      "properties": {
+        "strategy": {
+          "type": "string",
+          "enum": ["repair", "optimize", "workaround", "config_change", "upgrade"],
+          "description": "Type of fix applied"
+        },
+        "description": {
+          "type": "string",
+          "description": "Step-by-step fix description"
+        },
+        "diff_summary": {
+          "type": "string",
+          "description": "What code changes were made (text summary)"
+        },
+        "key_code_snippet": {
+          "type": "string",
+          "description": "Key code that fixes the issue"
+        },
+        "validation": {
+          "type": "string",
+          "description": "How to verify the fix works"
+        },
+        "api_level": {
+          "type": "string",
+          "description": "Min/max API level this fix applies to"
+        }
+      }
+    },
+    "tags": {
+      "type": "object",
+      "required": ["bug_type", "severity", "keywords"],
+      "properties": {
+        "harmonyos_version": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "e.g. [\"4.0\", \"4.1\", \"5.0\"]"
+        },
+        "api_category": {
+          "type": "array", "items": { "type": "string" },
+          "description": "e.g. [\"push\", \"hms-core\", \"ability\"]"
+        },
+        "bug_type": {
+          "type": "array", "items": { "type": "string" },
+          "description": "e.g. [\"null_return\", \"async_timing\", \"crash\"]"
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["critical", "major", "minor", "cosmetic"]
+        },
+        "keywords": {
+          "type": "array", "items": { "type": "string" },
+          "description": "Search keywords for fuzzy matching"
+        }
+      }
+    },
+    "evolver_meta": {
+      "type": "object",
+      "properties": {
+        "promoted_to_gene": { "type": "boolean", "default": false },
+        "matched_count": { "type": "integer", "default": 0 },
+        "related_genes": { "type": "array", "items": { "type": "string" } },
+        "ingested_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

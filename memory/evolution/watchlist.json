@@ -1,0 +1,42 @@
+{
+  "updated": "2026-05-24T16:59:38.785Z",
+  "cycle": 22,
+  "items": [
+    {
+      "priority": 1,
+      "signal": "log_error",
+      "count": 49,
+      "tip": "Agent tools failing — review execution environment, permissions, and command syntax"
+    },
+    {
+      "priority": 3,
+      "signal": "perf_bottleneck",
+      "count": 47,
+      "tip": "Profile slow operations, add caching where appropriate"
+    },
+    {
+      "priority": 4,
+      "signal": "capability_gap",
+      "count": 7,
+      "tip": "Consider creating a new skill to fill this gap"
+    },
+    {
+      "priority": 5,
+      "signal": "deployment_issue",
+      "count": 26,
+      "tip": "Add pre-deploy validation steps to CI pipeline"
+    },
+    {
+      "priority": 6,
+      "signal": "user_feature_request",
+      "count": 3,
+      "tip": "Prioritize feature backlog from user requests"
+    },
+    {
+      "priority": 7,
+      "signal": "stable_success_plateau",
+      "count": 26,
+      "tip": "System is stable — explore new capabilities"
+    }
+  ]
+}

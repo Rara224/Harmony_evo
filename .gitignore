@@ -1,0 +1,18 @@
+.env
+.forum_session_storage.json
+node_modules/
+opencode.jsonc
+.opencode/
+
+# Local runtime files
+*.log
+*.tmp
+.DS_Store
+assets/debug_cases/candidates/.checkpoint.json
+assets/debug_cases/candidates/.processed.json
+
+# Tool/test output
+.pytest_cache/
+coverage/
+dist/
+build/

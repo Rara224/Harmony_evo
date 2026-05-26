@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harmony_Evo — 自进化 Bug 修复知识系统</title>
+<link rel="icon" href="/assets/huawei-logo.svg" type="image/svg+xml">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+/* ═══════════════════════════════════════════════════════════════════════
+   Harmony_Evo Design System
+   Huawei Developer × HarmonyOS workbench theme
+   ═══════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Huawei red + HarmonyOS blue */
+  --huawei-red: #CF0A2C;
+  --huawei-red-2: #E6213C;
+  --huawei-red-soft: rgba(207,10,44,0.08);
+  --huawei-red-glow: rgba(207,10,44,0.22);
+  --harmony-blue: #0A59F7;
+  --harmony-blue-2: #00A3FF;
+  --harmony-blue-soft: rgba(10,89,247,0.08);
+  --harmony-blue-glow: rgba(10,89,247,0.24);
+
+  --primary: var(--huawei-red);
+  --primary-glow: var(--huawei-red-glow);
+  --primary-light: var(--huawei-red-2);
+  --primary-soft: var(--huawei-red-soft);
+
+  --evo: var(--harmony-blue);
+  --evo-glow: var(--harmony-blue-glow);
+  --evo-dark: #073DB5;
+  --evo-soft: var(--harmony-blue-soft);
+
+  /* States */
+  --success: #10B981;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+
+  /* Light theme */
+  --bg: #F5F7FB;
+  --bg-card: #FFFFFF;
+  --surface-2: #F9FBFE;
+  --text: #111827;
+  --text-secondary: #526071;
+  --text-muted: #8290A3;
+  --border: #DDE4EE;
+  --border-light: #EEF2F7;
+  --shadow: 0 1px 2px rgba(16,24,40,0.04), 0 1px 3px rgba(16,24,40,0.06);
+  --shadow-md: 0 8px 24px rgba(17,24,39,0.08);
+  --shadow-lg: 0 20px 56px rgba(17,24,39,0.16);
+  --radius: 8px;
+  --radius-sm: 6px;
+  --radius-lg: 10px;
+}
+
+[data-theme="dark"] {
+  --bg: #0D111A;
+  --bg-card: #151B26;
+  --surface-2: #111827;
+  --text: #F6F8FB;
+  --text-secondary: #B6C0CC;
+  --text-muted: #7C8796;
+  --border: #263243;
+  --border-light: #202A38;
+  --shadow: 0 1px 3px rgba(0,0,0,0.36);
+  --shadow-md: 0 10px 32px rgba(0,0,0,0.42);
+  --shadow-lg: 0 24px 64px rgba(0,0,0,0.52);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "HarmonyOS Sans", "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  background:
+    linear-gradient(180deg, rgba(10,89,247,0.08) 0, rgba(10,89,247,0) 220px),
+    linear-gradient(90deg, rgba(207,10,44,0.05), rgba(10,89,247,0.05)),
+    var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background .3s, color .3s;
+  overflow-x: hidden;
+}
+
+body::before {
+  content:'';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(130,144,163,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(130,144,163,0.08) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: linear-gradient(180deg, rgba(0,0,0,.7), transparent 56%);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SUBTLE DATA BACKGROUND
+   ═══════════════════════════════════════════════════════════════════════ */
+.particles-canvas {
+  position: fixed; top:0; left:0; width:100%; height:100%;
+  pointer-events: none; z-index:0; opacity:0.18;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   HEADER
+   ═══════════════════════════════════════════════════════════════════════ */
+.header {
+  position: sticky; top:0; z-index:100;
+  background: rgba(255,255,255,0.92);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: background .3s;
+  box-shadow: 0 2px 12px rgba(17,24,39,0.04);
+}
+[data-theme="dark"] .header {
+  background: rgba(21,27,38,0.92);
+}
+.header::before {
+  content:'';
+  position:absolute;
+  left:0; right:0; top:0; height:3px;
+  background: linear-gradient(90deg, var(--huawei-red), var(--harmony-blue), var(--harmony-blue-2));
+}
+.header-inner {
+  max-width: 1280px; margin:0 auto; padding:0 20px;
+  display:flex; align-items:center; min-height:86px; gap:14px;
+}
+.logo {
+  display:flex; align-items:center; gap:14px; margin-right:18px;
+  text-decoration:none; color:var(--text); font-weight:700; font-size:16px;
+  white-space:nowrap;
+}
+.brand-logo-mark {
+  width: 132px;
+  height: 44px;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid rgba(207,10,44,0.16);
+  box-shadow: 0 8px 18px rgba(207,10,44,0.12);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex: 0 0 auto;
+}
+.brand-logo-img {
+  display:block;
+  width: 112px;
+  height: auto;
+}
+.brand-copy { display:flex; flex-direction:column; gap:2px; line-height:1.1; }
+.brand-name { font-size:18px; letter-spacing:0; }
+.brand-sub {
+  font-size:12px;
+  color:var(--text-muted);
+  font-weight:600;
+  letter-spacing:0;
+}
+
+.nav { display:flex; gap:2px; min-height:64px; flex:1; min-width:0; }
+.nav-btn {
+  background:none; border:none; color:var(--text-secondary); font-size:13px;
+  padding:0 16px; cursor:pointer; min-height:64px; display:flex; align-items:center;
+  border-bottom:3px solid transparent; transition:all .2s;
+  font-family:inherit; position:relative; white-space:nowrap;
+}
+.nav-btn:hover { color:var(--primary); background:rgba(207,10,44,0.05); }
+.nav-btn.active { color:var(--primary); border-bottom-color:var(--primary); font-weight:700; }
+.nav-symbol {
+  width:18px;
+  height:18px;
+  margin-right:6px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  color:inherit;
+  font-size:13px;
+}
+.nav-btn .dot {
+  width:6px; height:6px; border-radius:50%; background:var(--primary);
+  position:absolute; top:14px; right:10px;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.8)} }
+
+.header-meta {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex:0 0 auto;
+}
+.header-chip {
+  min-width:70px;
+  padding:7px 10px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:linear-gradient(180deg, var(--surface-2), var(--bg-card));
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  line-height:1;
+}
+.header-chip span {
+  color:var(--text-muted);
+  font-size:10px;
+  font-weight:700;
+}
+.header-chip strong {
+  color:var(--text);
+  font-size:14px;
+  font-weight:800;
+}
+
+.header-actions { display:flex; align-items:center; gap:8px; }
+.theme-toggle {
+  width:36px; height:36px; border-radius:6px; border:1px solid var(--border);
+  background:var(--surface-2); cursor:pointer; font-size:16px; display:flex;
+  align-items:center; justify-content:center; transition:all .2s;
+}
+.theme-toggle:hover { border-color:var(--primary); }
+
+.status-pill {
+  padding:4px 12px; border-radius:20px; font-size:11px; font-weight:600;
+  display:flex; align-items:center; gap:6px;
+  background:var(--primary-soft); color:var(--primary);
+  border:1px solid rgba(207,10,44,0.2);
+}
+.status-pill.online { background:rgba(16,185,129,0.1); color:var(--success); border-color:rgba(16,185,129,0.2); }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MAIN LAYOUT
+   ═══════════════════════════════════════════════════════════════════════ */
+.main { max-width:1280px; margin:0 auto; padding:24px 20px 80px; position:relative; z-index:1; }
+.section { display:none; animation: fadeSlideIn .35s ease; }
+.section.active { display:block; }
+@keyframes fadeSlideIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   STAT CARDS — 数据卡片
+   ═══════════════════════════════════════════════════════════════════════ */
+.stat-grid {
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+  gap:12px; margin-bottom:22px;
+}
+.stat-card {
+  background:linear-gradient(180deg, var(--bg-card), var(--surface-2)); border-radius:var(--radius); padding:18px 20px;
+  border:1px solid var(--border); transition:all .25s; position:relative; overflow:hidden;
+  box-shadow: var(--shadow);
+}
+.stat-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background:linear-gradient(90deg, var(--huawei-red), var(--harmony-blue));
+  opacity:0; transition:opacity .25s;
+}
+.stat-card:hover { transform:translateY(-2px); box-shadow:var(--shadow-md); }
+.stat-card:hover::before { opacity:1; }
+.stat-card .stat-icon {
+  width:36px; height:36px; border-radius:8px; display:flex;
+  align-items:center; justify-content:center; font-size:18px; margin-bottom:10px;
+}
+.stat-card .stat-value { font-size:31px; font-weight:800; line-height:1; margin-bottom:5px; letter-spacing:0; }
+.stat-card .stat-label { font-size:13px; color:var(--text-secondary); }
+.stat-card .stat-sub { font-size:11px; color:var(--text-muted); margin-top:2px; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PANELS
+   ═══════════════════════════════════════════════════════════════════════ */
+.panel {
+  background:var(--bg-card); border-radius:var(--radius); padding:24px;
+  border:1px solid var(--border); box-shadow:var(--shadow);
+  margin-bottom:16px; transition:background .3s;
+}
+.panel-header {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:16px; flex-wrap:wrap; gap:8px;
+}
+.panel-header h2 { font-size:16px; font-weight:700; display:flex; align-items:center; gap:8px; }
+.panel-header h2 .icon { font-size:18px; }
+.panel-header .sub { font-size:12px; color:var(--text-muted); font-weight:400; }
+.row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+@media (max-width:860px) { .row { grid-template-columns:1fr; } }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SEARCH
+   ═══════════════════════════════════════════════════════════════════════ */
+.search-wrap {
+  display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap;
+}
+.search-input {
+  flex:1; min-width:240px; padding:12px 16px; border:1px solid var(--border);
+  border-radius:var(--radius-sm); font-size:14px; background:var(--surface-2);
+  color:var(--text); font-family:inherit; outline:none; transition:all .2s;
+}
+.search-input:focus {
+  border-color:var(--primary);
+  box-shadow:0 0 0 3px var(--primary-soft);
+}
+.search-input::placeholder { color:var(--text-muted); }
+.btn {
+  padding:10px 18px; border-radius:var(--radius-sm); font-size:14px; font-weight:700;
+  cursor:pointer; border:none; transition:all .2s; font-family:inherit;
+  display:inline-flex; align-items:center; gap:6px; white-space:nowrap;
+}
+.btn-primary {
+  background:linear-gradient(135deg, var(--huawei-red), var(--huawei-red-2));
+  color:#fff; box-shadow:0 2px 8px var(--primary-glow);
+}
+.btn-primary:hover { transform:translateY(-1px); box-shadow:0 4px 16px var(--primary-glow); }
+.btn-secondary { background:var(--surface-2); color:var(--text); border:1px solid var(--border); }
+.btn-secondary:hover { border-color:var(--primary); color:var(--primary); }
+.btn-evo {
+  background:linear-gradient(135deg, var(--harmony-blue), var(--harmony-blue-2));
+  color:#fff; box-shadow:0 2px 8px var(--evo-glow);
+}
+.btn-evo:hover { transform:translateY(-1px); box-shadow:0 4px 16px var(--evo-glow); }
+.btn-sm { padding:6px 14px; font-size:12px; border-radius:6px; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SEARCH RESULTS
+   ═══════════════════════════════════════════════════════════════════════ */
+.result-card {
+  padding:16px 20px; border:1px solid var(--border); border-radius:var(--radius);
+  margin-bottom:10px; cursor:pointer; transition:all .2s;
+  background:var(--bg-card);
+}
+.result-card:hover {
+  border-color:var(--primary);
+  box-shadow:0 0 0 2px var(--primary-soft);
+  transform:translateX(4px);
+}
+.result-card .r-title { font-size:15px; font-weight:700; margin-bottom:6px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.result-card .r-meta { font-size:12px; color:var(--text-secondary); display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+.result-card .r-preview { font-size:13px; color:var(--text-muted); margin-top:6px; line-height:1.5; }
+
+.badge {
+  display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; letter-spacing:.02em;
+}
+.badge-exact { background:rgba(16,185,129,.12); color:#059669; }
+.badge-signal { background:rgba(10,89,247,.12); color:#0A59F7; }
+.badge-fuzzy { background:rgba(245,158,11,.12); color:#D97706; }
+.badge-critical { background:rgba(239,68,68,.12); color:#DC2626; }
+.badge-major { background:rgba(245,158,11,.12); color:#D97706; }
+.badge-minor { background:rgba(100,116,139,.12); color:#64748B; }
+
+.tag {
+  display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:500;
+  background:var(--evo-soft); color:var(--evo); margin:2px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   TABLE
+   ═══════════════════════════════════════════════════════════════════════ */
+.data-table { width:100%; border-collapse:separate; border-spacing:0; font-size:13px; }
+.data-table th {
+  padding:10px 14px; text-align:left; font-size:11px; font-weight:700;
+  color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;
+  border-bottom:1px solid var(--border); background:var(--surface-2);
+}
+.data-table td { padding:10px 14px; border-bottom:1px solid var(--border-light); }
+.data-table tr { cursor:pointer; transition:background .15s; }
+.data-table tr:hover { background:var(--primary-soft); }
+.data-table .cell-id { font-family:"SF Mono","Fira Code",monospace; font-size:11px; color:var(--text-muted); }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   EVOLUTION TIMELINE
+   ═══════════════════════════════════════════════════════════════════════ */
+.evo-timeline { position:relative; padding-left:24px; }
+.evo-timeline::before {
+  content:''; position:absolute; left:8px; top:4px; bottom:4px;
+  width:2px; background:linear-gradient(to bottom, var(--evo), var(--primary));
+  border-radius:1px;
+}
+.evo-node {
+  position:relative; padding:10px 0 10px 28px;
+  border-left:2px solid transparent; transition:all .2s;
+}
+.evo-node::before {
+  content:''; position:absolute; left:-29px; top:14px;
+  width:12px; height:12px; border-radius:50%;
+  background:var(--bg-card); border:2px solid var(--evo);
+  transition:all .25s;
+}
+.evo-node:hover::before {
+  background:var(--evo); box-shadow:0 0 12px var(--evo-glow);
+}
+.evo-node.active::before { background:var(--primary); border-color:var(--primary); box-shadow:0 0 12px var(--primary-glow); }
+.evo-node .evo-title { font-size:14px; font-weight:600; }
+.evo-node .evo-meta { font-size:12px; color:var(--text-muted); }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   DNA HELIX LOADER
+   ═══════════════════════════════════════════════════════════════════════ */
+.dna-loader {
+  display:flex; align-items:center; justify-content:center; gap:6px; padding:24px;
+}
+.dna-bar {
+  width:4px; height:32px; border-radius:2px;
+  background:linear-gradient(to bottom, var(--primary), var(--evo));
+  animation:dna-wave 1.2s ease-in-out infinite;
+}
+.dna-bar:nth-child(2) { animation-delay:.15s; }
+.dna-bar:nth-child(3) { animation-delay:.3s; }
+.dna-bar:nth-child(4) { animation-delay:.45s; }
+.dna-bar:nth-child(5) { animation-delay:.6s; }
+.dna-bar:nth-child(6) { animation-delay:.75s; }
+@keyframes dna-wave {
+  0%,100% { transform:scaleY(.4); opacity:.3; }
+  50% { transform:scaleY(1); opacity:1; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   GENE NETWORK VISUALIZATION
+   ═══════════════════════════════════════════════════════════════════════ */
+.gene-grid {
+  display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+  gap:12px;
+}
+.gene-card {
+  background:var(--surface-2); border-radius:var(--radius); padding:16px;
+  border:1px solid var(--border); transition:all .2s;
+  position:relative; overflow:hidden;
+}
+.gene-card:hover { border-color:var(--evo); }
+.gene-card .gene-header { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+.gene-card .gene-id { font-family:monospace; font-size:11px; color:var(--evo); font-weight:600; }
+.gene-card .gene-signals { display:flex; flex-wrap:wrap; gap:4px; margin-top:8px; }
+.gene-card .gene-src { font-size:11px; color:var(--text-muted); margin-top:8px; }
+.gene-card .gene-connector {
+  position:absolute; top:-8px; right:16px;
+  width:16px; height:16px; border-radius:50%;
+  border:2px solid var(--evo); background:var(--bg-card);
+}
+.gene-card .gene-connector::after {
+  content:''; position:absolute; top:6px; left:-20px;
+  width:18px; height:2px; background:var(--evo); opacity:.5;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MODAL
+   ═══════════════════════════════════════════════════════════════════════ */
+.modal-overlay {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5);
+  z-index:200; justify-content:center; align-items:flex-start;
+  padding:60px 16px 40px; overflow-y:auto;
+  backdrop-filter:blur(4px);
+}
+.modal-overlay.show { display:flex; }
+.modal {
+  background:var(--bg-card); border-radius:var(--radius-lg);
+  max-width:760px; width:100%; padding:28px 32px;
+  box-shadow:var(--shadow-lg); border:1px solid var(--border);
+  animation:modalIn .25s ease;
+}
+@keyframes modalIn { from{opacity:0;transform:translateY(20px) scale(.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+.modal-close {
+  float:right; background:none; border:none; font-size:24px; cursor:pointer;
+  color:var(--text-muted); padding:0 4px; line-height:1;
+}
+.modal-close:hover { color:var(--text); }
+.modal .field { margin:14px 0; }
+.modal .field-label {
+  font-size:11px; font-weight:700; color:var(--text-muted);
+  text-transform:uppercase; letter-spacing:.04em; margin-bottom:4px;
+}
+.modal .field-value { font-size:14px; line-height:1.7; }
+.modal pre {
+  background:var(--surface-2); padding:14px 16px; border-radius:var(--radius-sm);
+  overflow-x:auto; font-size:13px; line-height:1.6;
+  border:1px solid var(--border);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   TOAST
+   ═══════════════════════════════════════════════════════════════════════ */
+.toast {
+  position:fixed; bottom:28px; right:28px; z-index:300;
+  padding:14px 24px; border-radius:var(--radius);
+  background:var(--bg-card); color:var(--text);
+  font-size:13px; font-weight:600; border:1px solid var(--border);
+  box-shadow:var(--shadow-lg);
+  opacity:0; transform:translateY(12px); transition:all .3s;
+  pointer-events:none;
+}
+.toast.show { opacity:1; transform:translateY(0); }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CHARTS
+   ═══════════════════════════════════════════════════════════════════════ */
+.chart-wrap { position:relative; height:240px; min-width:0; }
+.api-chart-layout {
+  display:grid;
+  grid-template-columns:minmax(210px, 280px) minmax(0, 1fr);
+  gap:18px;
+  align-items:center;
+  min-height:248px;
+}
+.chart-wrap-donut {
+  height:252px;
+  width:100%;
+  max-width:280px;
+  justify-self:center;
+}
+.chart-legend {
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:9px 14px;
+  align-content:center;
+  min-width:0;
+}
+.legend-item {
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:var(--text-secondary);
+  font-size:12px;
+  line-height:1.25;
+}
+.legend-dot {
+  width:9px;
+  height:9px;
+  min-width:9px;
+  flex:0 0 9px;
+  border-radius:50%;
+  display:inline-block;
+}
+.legend-label {
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.legend-count {
+  margin-left:auto;
+  flex:0 0 auto;
+  color:var(--text);
+  font-weight:800;
+  font-variant-numeric:tabular-nums;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   HEALTH METER
+   ═══════════════════════════════════════════════════════════════════════ */
+.health-ring {
+  position:relative; width:80px; height:80px;
+}
+.health-ring svg { transform:rotate(-90deg); }
+.health-ring .bg { fill:none; stroke:var(--border); stroke-width:6; }
+.health-ring .fill { fill:none; stroke-width:6; stroke-linecap:round; transition:stroke-dashoffset 1s ease; }
+.health-ring .val {
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  font-size:22px; font-weight:800;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════════════ */
+@media (max-width:1120px) {
+  .header-meta { display:none; }
+  .logo { margin-right:auto; }
+}
+@media (max-width:920px) {
+  .header-inner { height:auto; flex-wrap:wrap; padding:10px 16px; gap:8px; }
+  .nav { order:3; flex:1 0 100%; overflow-x:auto; min-height:44px; }
+  .nav-btn { min-height:44px; padding:0 14px; }
+  .header-actions { margin-left:auto; }
+}
+@media (max-width:640px) {
+  .header-inner { padding:10px 12px; gap:8px; }
+  .brand-logo-mark { width:112px; height:38px; }
+  .brand-logo-img { width:96px; }
+  .brand-name { font-size:16px; }
+  .brand-sub { font-size:11px; }
+  .nav { height:42px; }
+  .nav-btn { padding:0 12px; font-size:12px; }
+  .api-chart-layout { grid-template-columns:1fr; min-height:0; }
+  .chart-wrap-donut { height:230px; max-width:260px; }
+  .chart-legend { grid-template-columns:1fr; }
+  .stat-grid { grid-template-columns:repeat(2,1fr); }
+  .stat-card { padding:14px 16px; }
+  .stat-card .stat-value { font-size:26px; }
+  .modal { padding:18px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   EMPTY STATE
+   ═══════════════════════════════════════════════════════════════════════ */
+.empty { text-align:center; padding:48px 16px; color:var(--text-muted); }
+.empty-icon { font-size:56px; margin-bottom:12px; opacity:.3; }
+.empty-text { font-size:14px; margin-bottom:16px; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SELECT / INPUT GLOBAL
+   ═══════════════════════════════════════════════════════════════════════ */
+select {
+  padding:8px 12px; border:1px solid var(--border); border-radius:var(--radius-sm);
+  font-size:13px; background:var(--surface-2); color:var(--text); font-family:inherit;
+  cursor:pointer; outline:none;
+}
+select:focus { border-color:var(--primary); }
+.form-inline { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+</style>
+</head>
+<body data-theme="light">
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     PARTICLE CANVAS — 数据流动粒子背景
+     ═══════════════════════════════════════════════════════════════════ -->
+<canvas class="particles-canvas" id="particles"></canvas>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════════════════════════════════ -->
+<header class="header">
+  <div class="header-inner">
+    <a class="logo" href="#" onclick="showSection('dashboard')" aria-label="Harmony_Evo dashboard">
+      <span class="brand-logo-mark" aria-hidden="true">
+        <img class="brand-logo-img" src="/assets/huawei-logo.svg" alt="">
+      </span>
+      <span class="brand-copy">
+        <span class="brand-name">Harmony_Evo</span>
+        <span class="brand-sub">HarmonyOS DebugCase Evolution</span>
+      </span>
+    </a>
+    <nav class="nav" id="nav">
+      <button class="nav-btn active" data-section="dashboard"><span class="nav-symbol">◆</span> 总览</button>
+      <button class="nav-btn" data-section="search"><span class="nav-symbol">⌕</span> 搜索</button>
+      <button class="nav-btn" data-section="cases"><span class="nav-symbol">▤</span> 案例库</button>
+      <button class="nav-btn" data-section="scraper"><span class="nav-symbol">↓</span> 采集</button>
+      <button class="nav-btn" data-section="signals"><span class="nav-symbol">⇡</span> 信号</button>
+      <button class="nav-btn" data-section="evolver"><span class="nav-symbol">↗</span> 进化</button>
+    </nav>
+    <div class="header-meta" id="header-meta" aria-label="运行指标">
+      <span class="header-chip"><span>案例</span><strong>--</strong></span>
+      <span class="header-chip"><span>候选</span><strong>--</strong></span>
+      <span class="header-chip"><span>Genes</span><strong>--</strong></span>
+    </div>
+    <div class="header-actions">
+      <span class="status-pill online" id="sys-status">在线</span>
+      <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">◐</button>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     MAIN CONTENT
+     ═══════════════════════════════════════════════════════════════════ -->
+<main class="main">
+
+  <!-- ━━━━━━━━━━ DASHBOARD ━━━━━━━━━━ -->
+  <div class="section active" id="section-dashboard">
+    <div class="stat-grid" id="stats-cards"></div>
+    <div class="row">
+      <div class="panel">
+        <div class="panel-header"><h2><span class="icon">▦</span> 根因分类</h2></div>
+        <div class="chart-wrap"><canvas id="chart-category"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><h2><span class="icon">⌬</span> API 分布</h2></div>
+        <div class="api-chart-layout">
+          <div class="chart-wrap chart-wrap-donut"><canvas id="chart-api"></canvas></div>
+          <div class="chart-legend" id="api-legend"></div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="panel">
+        <div class="panel-header">
+          <h2><span class="icon">●</span> 系统健康度</h2>
+          <span class="sub" id="health-updated"></span>
+        </div>
+        <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+          <div class="health-ring" id="health-ring"></div>
+          <div id="health-detail" style="font-size:13px;line-height:1.8;color:var(--text-secondary)"></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <h2><span class="icon">↯</span> 快捷操作</h2>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button class="btn btn-primary" onclick="showSection('search')">⌕ 搜索案例库</button>
+          <button class="btn btn-evo" onclick="showSection('evolver')">↗ 进化状态</button>
+          <button class="btn btn-secondary" onclick="showSection('scraper')">⬇ 运行采集器</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ━━━━━━━━━━ SEARCH ━━━━━━━━━━ -->
+  <div class="section" id="section-search">
+    <div class="panel">
+      <div class="panel-header"><h2><span class="icon">⌕</span> 搜索 DebugCase 库</h2><span class="sub">支持中文/英文关键词、华为错误码、信号标签</span></div>
+      <div class="search-wrap">
+        <input class="search-input" id="search-input" placeholder="输入报错信息，如：push token 返回空、907135702、canvas 卡顿……" onkeydown="if(event.key==='Enter')doSearch()">
+        <button class="btn btn-primary" onclick="doSearch()">搜索</button>
+      </div>
+      <div class="form-inline">
+        <input class="search-input" id="search-code" placeholder="错误码（可选）" style="flex:0 0 160px;min-width:auto">
+        <input class="search-input" id="search-signal" placeholder="信号标签（可选）" style="flex:0 0 160px;min-width:auto">
+      </div>
+    </div>
+    <div id="search-results"></div>
+  </div>
+
+  <!-- ━━━━━━━━ CASES ━━━━━━━━ -->
+  <div class="section" id="section-cases">
+    <div class="panel">
+      <div class="panel-header"><h2><span class="icon">☰</span> 全部案例 <span class="sub" id="case-count"></span></h2></div>
+      <div class="form-inline">
+        <select id="filter-category" onchange="loadCaseList()">
+          <option value="">全部类别</option>
+          <option value="api_usage">API 使用</option>
+          <option value="permission">权限</option>
+          <option value="configuration">配置</option>
+          <option value="performance">性能</option>
+          <option value="build_compile">编译构建</option>
+          <option value="other">其他</option>
+        </select>
+        <select id="filter-severity" onchange="loadCaseList()">
+          <option value="">全部严重度</option>
+          <option value="critical">严重</option>
+          <option value="major">主要</option>
+          <option value="minor">次要</option>
+        </select>
+        <button class="btn btn-sm btn-secondary" onclick="loadFeedbackStats()">反馈统计</button>
+      </div>
+      <div id="case-list"><div class="dna-loader"><div class="dna-bar"></div><div class="dna-bar"></div><div class="dna-bar"></div><div class="dna-bar"></div><div class="dna-bar"></div><div class="dna-bar"></div></div></div>
+    </div>
+  </div>
+
+  <!-- ━━━━━━━━ SCRAPER ━━━━━━━━ -->
+  <div class="section" id="section-scraper">
+    <div class="row">
+      <div class="panel">
+        <div class="panel-header">
+          <h2><span class="icon">⬇</span> 华为开发者论坛采集</h2>
+          <span class="sub">Playwright 自动化采集</span>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+          <button class="btn btn-primary" onclick="runScraper(30)">采集 30 条</button>
+          <button class="btn btn-primary" onclick="runScraper(100)">采集 100 条</button>
+          <button class="btn btn-secondary" onclick="runScraper(300)">采集 300 条</button>
+          <button class="btn btn-secondary" onclick="refreshScraperStatus()">刷新状态</button>
+        </div>
+        <div id="scraper-status"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><h2><span class="icon">□</span> 原始数据</h2></div>
+        <div id="candidates-list"><div class="dna-loader"><div class="dna-bar"></div><div class="dna-bar"></div><div class="dna-bar"></div><div class="dna-bar"></div><div class="dna-bar"></div><div class="dna-bar"></div></div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header">
+        <h2><span class="icon">⚙</span> 提取 DebugCase</h2>
+        <span class="sub">将原始帖子转为结构化案例</span>
+      </div>
+      <button class="btn btn-evo" onclick="extractCandidates()">运行提取</button>
+      <span id="extract-result" style="margin-left:12px;font-size:13px;color:var(--text-secondary)"></span>
+    </div>
+  </div>
+
+  <!-- ━━━━━━━━ DEV SIGNALS ━━━━━━━━ -->
+  <div class="section" id="section-signals">
+    <div class="panel">
+      <div class="panel-header">
+        <h2><span class="icon">⇡</span> 开发信号上传</h2>
+        <span class="sub" id="dev-signal-summary">Hook-level dev signals</span>
+      </div>
+      <div id="dev-signal-list"><div class="dna-loader"><div class="dna-bar"></div><div class="dna-bar"></div><div class="dna-bar"></div><div class="dna-bar"></div><div class="dna-bar"></div><div class="dna-bar"></div></div></div>
+    </div>
+  </div>
+
+  <!-- ━━━━━━━━ EVOLVER ━━━━━━━━ -->
+  <div class="section" id="section-evolver">
+    <div class="stat-grid" id="evo-stat-grid"></div>
+    <div class="row">
+      <div class="panel">
+        <div class="panel-header">
+          <h2><span class="icon">◇</span> 注入的 Harmony 基因</h2>
+          <span class="sub">已推送到 evolver GEP</span>
+        </div>
+        <div class="gene-grid" id="gene-list"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <h2><span class="icon">↗</span> 待升级案例</h2>
+          <span class="sub">匹配 ≥3 次即可升级为基因</span>
+        </div>
+        <div id="eligible-list"></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header">
+        <h2><span class="icon">⏳</span> 进化时间线</h2>
+        <span class="sub">GEP 引擎事件流</span>
+      </div>
+      <div class="evo-timeline" id="evo-timeline"></div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     MODAL
+     ═══════════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     TOAST
+     ═══════════════════════════════════════════════════════════════════ -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════
+// PARTICLE SYSTEM — 自进化数据流粒子
+// ═══════════════════════════════════════════════════════════════════════
+(function(){
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let particles = [], animId;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  const isDark = () => document.body.dataset.theme === 'dark';
+
+  function createParticles() {
+    particles = [];
+    const count = Math.min(60, Math.floor(window.innerWidth / 20));
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.5 + 0.5,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        hue: Math.random() > 0.55 ? 349 : 218,
+        alpha: Math.random() * 0.28 + 0.12,
+      });
+    }
+  }
+  createParticles();
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const dark = isDark();
+
+    // Draw connections
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 100) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = dark
+            ? `rgba(10,89,247,${0.07 * (1 - dist/100)})`
+            : `rgba(10,89,247,${0.05 * (1 - dist/100)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Draw particles
+    for (const p of particles) {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = dark
+        ? `hsla(${p.hue}, 80%, 60%, ${p.alpha})`
+        : `hsla(${p.hue}, 70%, 50%, ${p.alpha})`;
+      ctx.fill();
+
+      // Move
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0) p.x = canvas.width;
+      if (p.x > canvas.width) p.x = 0;
+      if (p.y < 0) p.y = canvas.height;
+      if (p.y > canvas.height) p.y = 0;
+    }
+    animId = requestAnimationFrame(draw);
+  }
+  draw();
+
+  // Refresh on theme change
+  const observer = new MutationObserver(() => createParticles());
+  observer.observe(document.body, { attributes: true, attributeFilter: ['data-theme'] });
+})();
+
+// ═══════════════════════════════════════════════════════════════════════
+// THEME TOGGLE
+// ═══════════════════════════════════════════════════════════════════════
+function toggleTheme() {
+  const body = document.body;
+  const current = body.dataset.theme;
+  body.dataset.theme = current === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('harmony_evo_theme', body.dataset.theme);
+  refreshAllCharts();
+}
+(function(){
+  const saved = localStorage.getItem('harmony_evo_theme');
+  if (saved) document.body.dataset.theme = saved;
+})();
+
+// ═══════════════════════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════════════════════
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('section-' + name).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.querySelector(`.nav-btn[data-section="${name}"]`);
+  if (btn) btn.classList.add('active');
+
+	  const loaders = {
+	    dashboard: loadDashboard, search: ()=>0, cases: loadCaseList,
+	    scraper: ()=>{refreshScraperStatus();loadCandidates();},
+	    signals: loadDevSignals,
+	    evolver: loadEvolver
+	  };
+  if (loaders[name]) loaders[name]();
+}
+document.getElementById('nav').addEventListener('click', e => {
+  const btn = e.target.closest('.nav-btn');
+  if (btn) showSection(btn.dataset.section);
+});
+
+// ═══════════════════════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════════════════════
+function toast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000); }
+
+// ═══════════════════════════════════════════════════════════════════════
+// API
+// ═══════════════════════════════════════════════════════════════════════
+async function api(path, opts) { const r=await fetch(path,opts); if(!r.ok)throw new Error(await r.text()); return r.json(); }
+
+// ═══════════════════════════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════════════════════════
+let categoryChart, apiChart;
+
+async function loadDashboard() {
+  const [d, health] = await Promise.all([
+    api('/api/stats'),
+    api('/api/health').catch(()=>null)
+  ]);
+
+  // Stats cards
+  document.getElementById('stats-cards').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-icon" style="background:rgba(207,10,44,.1);color:var(--primary)">▤</div>
+      <div class="stat-value">${d.totalCases}</div>
+      <div class="stat-label">案例总数</div>
+      <div class="stat-sub">已结构化入库</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:rgba(10,89,247,.1);color:var(--evo)">◇</div>
+      <div class="stat-value">${d.harmonyGenes}</div>
+      <div class="stat-label">Harmony 基因</div>
+      <div class="stat-sub">已注入 evolver GEP</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:rgba(245,158,11,.1);color:var(--warning)">□</div>
+      <div class="stat-value">${d.candidateCount}</div>
+      <div class="stat-label">原始候选</div>
+      <div class="stat-sub">待提取结构化</div>
+    </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(16,185,129,.1);color:var(--success)">✓</div>
+        <div class="stat-value">${d.promoted}</div>
+        <div class="stat-label">已升级为基因</div>
+        <div class="stat-sub">显式记录命中后升级</div>
+      </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:${d.evolverConnected?'rgba(16,185,129,.1)':'rgba(239,68,68,.1)'};color:${d.evolverConnected?'var(--success)':'var(--danger)'}">${d.evolverConnected?'⊕':'⊗'}</div>
+      <div class="stat-value" style="color:${d.evolverConnected?'var(--success)':'var(--danger)'}">${d.evolverConnected?'已连接':'未连接'}</div>
+      <div class="stat-label">Evolver 状态</div>
+    </div>
+  `;
+
+  const headerMeta = document.getElementById('header-meta');
+  if (headerMeta) {
+    headerMeta.innerHTML = `
+      <span class="header-chip"><span>案例</span><strong>${d.totalCases ?? 0}</strong></span>
+      <span class="header-chip"><span>候选</span><strong>${d.candidateCount ?? 0}</strong></span>
+      <span class="header-chip"><span>Genes</span><strong>${d.harmonyGenes ?? 0}</strong></span>
+    `;
+  }
+
+  // Charts
+  renderCategoryChart(d.byCategory);
+  renderApiChart(d.byApi);
+
+  // Health ring
+  if (health) {
+    document.getElementById('health-updated').textContent = 'updated ' + new Date(health.timestamp).toLocaleString('zh-CN');
+    const q = health.quality_score;
+    const color = q >= 0.7 ? 'var(--success)' : q >= 0.4 ? 'var(--warning)' : 'var(--danger)';
+    const circumference = 2 * Math.PI * 32;
+    const offset = circumference * (1 - q);
+    document.getElementById('health-ring').innerHTML = `
+      <svg width="80" height="80" viewBox="0 0 80 80">
+        <circle class="bg" cx="40" cy="40" r="32"/>
+        <circle class="fill" cx="40" cy="40" r="32" stroke="${color}" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"/>
+      </svg>
+      <div class="val" style="color:${color}">${Math.round(q*100)}</div>`;
+    document.getElementById('health-detail').innerHTML = `
+      库状态：<strong>${health.library_size === 'healthy' ? '健康' : health.library_size === 'adequate' ? '适中' : '冷启动'}</strong><br>
+      进化状态：<strong>${health.evolution === 'active' ? '活跃' : '空闲'}</strong><br>
+      建议：${(health.recommendations||[])[0] || '系统运行正常'}`;
+  }
+}
+
+function renderCategoryChart(data) {
+  const canvas = document.getElementById('chart-category');
+  if (categoryChart) categoryChart.destroy();
+  const colors = ['#CF0A2C','#0A59F7','#00A3FF','#10B981','#F59E0B','#7C3AED','#E6213C'];
+  categoryChart = new Chart(canvas, {
+    type: 'bar',
+    data: { labels: Object.keys(data), datasets: [{ data: Object.values(data), backgroundColor: colors,
+      borderRadius: 6, borderSkipped: false }] },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: getComputedStyle(document.body).getPropertyValue('--border') } },
+        x: { grid: { display: false }, ticks: { font: { size: 11 } } } } }
+  });
+}
+
+function renderApiChart(data) {
+  const canvas = document.getElementById('chart-api');
+  const legend = document.getElementById('api-legend');
+  if (apiChart) apiChart.destroy();
+  const entries = Object.entries(data).sort((a,b)=>b[1]-a[1]);
+  const colors = ['#CF0A2C','#0A59F7','#00A3FF','#10B981','#F59E0B','#7C3AED','#E6213C','#06B6D4','#84CC16','#F97316'];
+  if (legend) {
+    legend.innerHTML = entries.length ? entries.map(([label, count], i) => `
+      <div class="legend-item" title="${esc(label)}: ${count}">
+        <span class="legend-dot" style="background:${colors[i % colors.length]}"></span>
+        <span class="legend-label">${esc(label)}</span>
+        <span class="legend-count">${count}</span>
+      </div>
+    `).join('') : '<div class="legend-item">暂无 API 数据</div>';
+  }
+  apiChart = new Chart(canvas, {
+    type: 'doughnut',
+    data: { labels: entries.map(e=>e[0]), datasets: [{ data: entries.map(e=>e[1]), backgroundColor: entries.map((_, i)=>colors[i % colors.length]),
+      borderWidth: 2, borderColor: getComputedStyle(document.body).getPropertyValue('--bg-card') }] },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } } }
+  });
+}
+
+function refreshAllCharts() {
+  api('/api/stats').then(d => {
+    renderCategoryChart(d.byCategory);
+    renderApiChart(d.byApi);
+  }).catch(()=>{});
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// SEARCH
+// ═══════════════════════════════════════════════════════════════════════
+async function doSearch() {
+  const q=document.getElementById('search-input').value.trim();
+  const code=document.getElementById('search-code').value.trim();
+  const signal=document.getElementById('search-signal').value.trim();
+  if(!q&&!code&&!signal){toast('请输入搜索内容');return;}
+  const params=new URLSearchParams(); if(q)params.set('q',q); if(code)params.set('error_code',code); if(signal)params.set('signal',signal);
+  params.set('top','20'); params.set('min_score','1');
+  const data=await api('/api/search?'+params.toString());
+  const el=document.getElementById('search-results');
+  if(data.total===0){el.innerHTML='<div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">未找到匹配案例，试试更宽泛的关键词</div></div>';return;}
+  el.innerHTML=`<p style="font-size:13px;color:var(--text-secondary);margin-bottom:8px">找到 ${data.total} 个结果</p>`;
+  for(const hit of data.results){const dc=hit.case;
+    const mc=hit.matchType==='exact'?'badge-exact':hit.matchType==='signal'?'badge-signal':'badge-fuzzy';
+    const sc=dc.tags?.severity==='critical'?'badge-critical':dc.tags?.severity==='major'?'badge-major':'badge-minor';
+    el.innerHTML+=`<div class="result-card" onclick="showCaseDetail('${dc.dc_id}')">
+      <div class="r-title">${esc(dc.title)} <span class="badge ${mc}">${hit.matchType}·${hit.score}</span> <span class="badge ${sc}">${dc.tags?.severity||''}</span></div>
+      <div class="r-meta">
+        <span>${dc.dc_id}</span><span>${dc.source||''}</span>
+        ${dc.symptom?.error_code?`<span>错误码:${dc.symptom.error_code}</span>`:''}
+        <span class="tag">${dc.root_cause?.category||''}</span>
+      </div>
+      <div class="r-preview">${esc((dc.fix?.description||'').slice(0,150))}</div>
+      ${hit.details.length?`<div style="font-size:11px;color:var(--text-muted);margin-top:4px">${hit.details.join(' · ')}</div>`:''}
+    </div>`;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// CASE LIST
+// ═══════════════════════════════════════════════════════════════════════
+async function loadCaseList() {
+  const cat=document.getElementById('filter-category').value;
+  const sev=document.getElementById('filter-severity').value;
+  const params=new URLSearchParams({limit:'100'});
+  if(cat)params.set('category',cat); if(sev)params.set('severity',sev);
+  const data=await api('/api/cases?'+params.toString());
+  document.getElementById('case-count').textContent=`(${data.total} 个)`;
+  const el=document.getElementById('case-list');
+  if(data.cases.length===0){el.innerHTML='<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">没有找到案例</div></div>';return;}
+  el.innerHTML=`<table class="data-table"><thead><tr><th>ID</th><th>标题</th><th>类别</th><th>严重度</th><th>错误码</th><th>来源</th><th>匹配次数</th></tr></thead><tbody>
+    ${data.cases.map(dc=>`<tr onclick="showCaseDetail('${dc.dc_id}')">
+      <td class="cell-id">${dc.dc_id}</td>
+      <td><strong>${esc(dc.title).slice(0,55)}</strong></td>
+      <td><span class="tag">${dc.root_cause?.category||''}</span></td>
+      <td><span class="badge badge-${dc.tags?.severity||'minor'}">${dc.tags?.severity||''}</span></td>
+      <td style="font-family:monospace;font-size:12px">${dc.symptom?.error_code||'-'}</td>
+      <td style="font-size:12px;color:var(--text-muted)">${dc.source||''}</td>
+      <td style="text-align:center">${dc.evolver_meta?.matched_count||0}${dc.evolver_meta?.promoted_to_gene?' · G':''}</td>
+    </tr>`).join('')}</tbody></table>`;
+}
+
+async function loadFeedbackStats() {
+  try {
+    const d = await api('/api/feedback/stats');
+    const el = document.getElementById('case-list');
+    el.innerHTML = `<div class="panel" style="margin-top:0">
+      <div class="panel-header"><h2>修复反馈统计</h2></div>
+      <div class="stat-grid" style="margin-bottom:0">
+        <div class="stat-card"><div class="stat-value">${d.casesWithFeedback}</div><div class="stat-label">有反馈的案例</div></div>
+        <div class="stat-card"><div class="stat-value">${d.totalFeedback}</div><div class="stat-label">总反馈数</div></div>
+        <div class="stat-card"><div class="stat-value" style="color:${d.successRate>0.7?'var(--success)':'var(--warning)'}">${Math.round(d.successRate*100)}%</div><div class="stat-label">修复成功率</div></div>
+      </div>
+      <button class="btn btn-sm btn-secondary" style="margin-top:12px" onclick="loadCaseList()">← 返回案例列表</button>
+    </div>`;
+  } catch(e) { toast('加载失败: '+e.message); }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// CASE DETAIL MODAL
+// ═══════════════════════════════════════════════════════════════════════
+async function showCaseDetail(id) {
+  const dc=await api('/api/cases/'+id);
+  const modal=document.getElementById('modal-content');
+  modal.innerHTML=`
+    <h2 style="font-size:18px;margin-bottom:4px">${esc(dc.title)}</h2>
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:16px">${dc.dc_id} · ${dc.source||''} · 入库 ${new Date(dc.evolver_meta?.ingested_at||'').toLocaleDateString('zh-CN')}</div>
+    <div style="margin-bottom:14px;display:flex;gap:6px;flex-wrap:wrap">
+      <span class="badge badge-${dc.tags?.severity||'minor'}">${dc.tags?.severity||''}</span>
+      <span class="tag">${dc.root_cause?.category||''}</span>
+      <span class="tag">${dc.fix?.strategy||''}</span>
+      ${(dc.tags?.api_category||[]).map(a=>`<span class="tag">${a}</span>`).join('')}
+      ${dc.evolver_meta?.promoted_to_gene?'<span class="badge badge-exact">已升级为基因</span>':''}
+      ${dc.evolver_meta?.matched_count?`<span style="font-size:12px;color:var(--text-muted)">匹配 ${dc.evolver_meta.matched_count} 次</span>`:''}
+    </div>
+    ${dc.symptom?.error_code?`<div class="field"><div class="field-label">错误码</div><div class="field-value" style="font-family:monospace;font-size:16px;color:var(--danger);font-weight:700">${esc(dc.symptom.error_code)}</div></div>`:''}
+    <div class="field"><div class="field-label">场景</div><div class="field-value">${esc(dc.symptom?.scenario||'')}</div></div>
+    ${dc.symptom?.error_message?`<div class="field"><div class="field-label">错误信息</div><div class="field-value"><code style="background:var(--bg);padding:2px 8px;border-radius:4px">${esc(dc.symptom.error_message.slice(0,300))}</code></div></div>`:''}
+    <div class="field"><div class="field-label">根因分析</div><div class="field-value">${esc(dc.root_cause?.analysis||'')}</div></div>
+    <div class="field"><div class="field-label">修复方案</div><div class="field-value">${esc(dc.fix?.description||'')}</div></div>
+    ${dc.fix?.key_code_snippet?`<div class="field"><div class="field-label">关键代码</div><pre>${esc(dc.fix.key_code_snippet)}</pre></div>`:''}
+    ${dc.fix?.validation?`<div class="field"><div class="field-label">验证方法</div><div class="field-value">${esc(dc.fix.validation)}</div></div>`:''}
+    ${dc.source_url?`<div class="field"><div class="field-label">来源</div><div class="field-value"><a href="${esc(dc.source_url)}" target="_blank" style="color:var(--evo)">${esc(dc.source_url)}</a></div></div>`:''}
+    <div style="display:flex;gap:8px;margin-top:20px;flex-wrap:wrap">
+      <button class="btn btn-evo btn-sm" onclick="promoteCase('${dc.dc_id}')">升级为基因</button>
+      <button class="btn btn-sm btn-secondary" onclick="recordCaseMatch('${dc.dc_id}')">记录命中</button>
+      <button class="btn btn-sm btn-secondary" onclick="recordFeedback('${dc.dc_id}',true)">✓ 修复有效</button>
+      <button class="btn btn-sm btn-secondary" onclick="recordFeedback('${dc.dc_id}',false)">✗ 修复无效</button>
+    </div>
+  `;
+  document.getElementById('modal').classList.add('show');
+}
+function closeModal(){document.getElementById('modal').classList.remove('show');}
+
+async function recordCaseMatch(id) {
+  try {
+    const r = await fetch('/api/cases/'+id+'/match', {method:'POST'});
+    const d = await r.json();
+    if (!d.ok) throw new Error(d.error || 'record failed');
+    toast(`已记录命中 · 当前 ${d.matched_count} 次`);
+  } catch(e) { toast('记录失败: '+e.message); }
+}
+
+async function recordFeedback(id, worked) {
+  try {
+    const r = await fetch('/api/feedback/'+id, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({worked,note:''})});
+    const d = await r.json();
+    toast(`${worked?'✓':'✗'} 反馈已记录 · 置信度: ${(d.confidence*100).toFixed(0)}%`);
+  } catch(e) { toast('反馈失败: '+e.message); }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// SCRAPER
+// ═══════════════════════════════════════════════════════════════════════
+function showScrapingProgress() {
+  const el = document.getElementById('scraper-status');
+  el.innerHTML = '<div class="dna-loader" style="padding:20px"><div class="dna-bar"></div><div class="dna-bar"></div><div class="dna-bar"></div><div class="dna-bar"></div><div class="dna-bar"></div><div class="dna-bar"></div></div><p style="text-align:center;font-size:13px;color:var(--text-secondary)" id="scrape-progress-text">正在启动浏览器并加载华为开发者论坛...</p>';
+}
+
+async function refreshScraperStatus(){
+  const s=await api('/api/scrape/status');
+  const cp=s.checkpoint||{};
+  const postsCount = (cp.postIds||[]).length;
+  const savedCount = cp.savedCount || cp.lastRun?.new || 0;
+  const targetCount = cp.targetCount || s.activeJob?.count || 0;
+  document.getElementById('scraper-status').innerHTML=
+  `<div class="stat-grid" style="margin-bottom:0">
+    <div class="stat-card"><div class="stat-value">${targetCount}</div><div class="stat-label">目标条数</div></div>
+    <div class="stat-card"><div class="stat-value">${savedCount}</div><div class="stat-label">已保存新帖</div></div>
+    <div class="stat-card"><div class="stat-value">${postsCount}</div><div class="stat-label">已访问帖子</div></div>
+    <div class="stat-card"><div class="stat-value">${s.candidateFiles.length}</div><div class="stat-label">原始数据文件</div></div>
+  </div>
+  <p style="font-size:12px;color:var(--text-muted);margin-top:10px">状态: ${cp.inProgress||s.activeJob?'采集中':'空闲'}${cp.lastRun?` · 上次: ${cp.lastRun.new||0} 新增 / ${cp.lastRun.duplicates||0} 重复 / ${cp.lastRun.errors||0} 错误`:''}</p>`;
+}
+
+let _scrapePollTimer = null;
+function stopScrapePoll() { if (_scrapePollTimer) { clearInterval(_scrapePollTimer); _scrapePollTimer = null; } }
+
+async function runScraper(count){
+  // Disable all scrape buttons
+  document.querySelectorAll('#section-scraper button[onclick^="runScraper"]').forEach(b => { b.disabled = true; b.style.opacity = '0.6'; });
+
+  showScrapingProgress();
+  const progressText = document.getElementById('scrape-progress-text');
+  const steps = ['正在启动浏览器...', '正在加载华为开发者论坛...', '正在抓取帖子详情...', '正在保存原始数据...'];
+  let step = 0;
+  const progressInterval = setInterval(() => {
+    if (progressText) progressText.textContent = steps[step % steps.length];
+    step++;
+  }, 4000);
+
+  try {
+    const r = await fetch('/api/scrape', { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({count}) });
+    const d = await r.json();
+    if (!r.ok || !d.ok) throw new Error(d.error || '采集任务提交失败');
+    clearInterval(progressInterval);
+    toast(`采集任务已提交: ${d.message}`);
+
+    // Poll for checkpoint updates every 5 seconds for up to 2 minutes
+    stopScrapePoll();
+    let pollCount = 0;
+    _scrapePollTimer = setInterval(async () => {
+      pollCount++;
+      try {
+        await refreshScraperStatus();
+        await loadCandidates();
+        const s = await api('/api/scrape/status');
+        const cp = s.checkpoint || {};
+        const isDone = !(cp.inProgress || s.activeJob);
+        // Stop polling when the background job finishes or after 5 minutes.
+        if (isDone || pollCount > 60) {
+          stopScrapePoll();
+          document.querySelectorAll('#section-scraper button[onclick^="runScraper"]').forEach(b => { b.disabled = false; b.style.opacity = '1'; });
+          if (isDone) {
+            toast(`✓ 采集完成：新增 ${cp.lastRun?.new||0} 条`);
+          } else {
+            toast(`采集进行中（已保存 ${cp.savedCount||0} 条），可刷新查看`);
+            document.querySelectorAll('#section-scraper button[onclick^="runScraper"]').forEach(b => { b.disabled = false; b.style.opacity = '1'; });
+          }
+        }
+      } catch(e) { /* ignore poll errors */ }
+    }, 5000);
+
+  } catch(e) {
+    clearInterval(progressInterval);
+    stopScrapePoll();
+    document.querySelectorAll('#section-scraper button[onclick^="runScraper"]').forEach(b => { b.disabled = false; b.style.opacity = '1'; });
+    document.getElementById('scraper-status').innerHTML = `<div class="empty"><div class="empty-icon">⚠</div><div class="empty-text">采集失败: ${esc(e.message)}</div></div>`;
+    toast('采集失败: ' + e.message);
+  }
+}
+async function loadCandidates(){const d=await api('/api/candidates');const el=document.getElementById('candidates-list');if(!d.files||d.files.length===0){el.innerHTML='<div class="empty"><div class="empty-icon">📂</div><div class="empty-text">暂无原始数据，请先运行采集器</div></div>';return;}el.innerHTML=d.files.map(f=>`<div style="margin-bottom:8px;padding:12px;border:1px solid var(--border);border-radius:var(--radius-sm)">
+  <div style="font-weight:700;font-size:13px;margin-bottom:4px">📄 ${f.filename} <span style="font-weight:400;color:var(--text-muted)">(${f.count} 条)</span></div>
+  <div style="font-size:12px;color:var(--text-secondary);line-height:1.6">${f.posts.slice(0,4).map(p=>`· ${esc(p.title).slice(0,55)}`).join('<br>')}</div></div>`).join('');}
+async function extractCandidates(){const btn=event.target;btn.disabled=true;btn.textContent='提取中...';try{const resp=await fetch('/api/extract',{method:'POST'});const d=await resp.json();document.getElementById('extract-result').textContent=`✓ ${d.message}`;setTimeout(()=>{btn.disabled=false;btn.textContent='运行提取';},3000);}catch(e){btn.disabled=false;btn.textContent='运行提取';toast('错误: '+e.message);}}
+
+// ═══════════════════════════════════════════════════════════════════════
+// DEV SIGNALS
+// ═══════════════════════════════════════════════════════════════════════
+async function loadDevSignals() {
+  const d = await api('/api/dev-signals?limit=30');
+  const summary = document.getElementById('dev-signal-summary');
+  const el = document.getElementById('dev-signal-list');
+  summary.textContent = `${d.total || 0} 条事件级信号 · ${d.files?.length || 0} 个文件`;
+  const latest = d.latest || [];
+  if (!latest.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">⇡</div><div class="empty-text">暂无开发信号。安装 Claude/OpenCode hook 并开启 upload-signals 后会显示在这里。</div></div>';
+    return;
+  }
+  el.innerHTML = latest.map(sig => {
+    const top = sig.search?.top?.[0];
+    const score = Number(sig.quality?.score || 0);
+    const scoreClass = score >= 0.7 ? 'badge-exact' : score >= 0.45 ? 'badge-signal' : 'badge-minor';
+    const statusClass = sig.status === 'accepted' ? 'badge-exact' : sig.status === 'quarantined' ? 'badge-critical' : 'badge-minor';
+    return `
+      <div class="result-card">
+        <div class="r-title">
+          ${esc(sig.title || sig.event_id || 'Untitled dev signal')}
+          <span class="badge ${statusClass}">${esc(sig.status || 'unknown')}</span>
+          <span class="badge ${scoreClass}">score ${score.toFixed(2)}</span>
+          ${sig.quality?.candidate_ready ? '<span class="badge badge-exact">candidate-ready</span>' : ''}
+        </div>
+        <div class="r-meta">
+          <span>${esc(sig.hook_event || sig.kind || '')}</span>
+          <span>${esc(sig.received_at || sig.captured_at || '')}</span>
+          <span>${esc(sig.tool?.name || '')}</span>
+        </div>
+        ${top ? `<div class="r-preview">Top case: <strong>${esc(top.dc_id)}</strong> · ${esc(top.title)} · ${esc(top.match_type)} · ${top.score}</div>` : ''}
+        <div style="margin-top:8px">${(sig.signals || []).slice(0, 8).map(s => `<span class="tag">${esc(s)}</span>`).join('')}</div>
+        <div class="r-preview">${esc(sig.excerpt || '').slice(0, 320)}</div>
+      </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// EVOLVER
+// ═══════════════════════════════════════════════════════════════════════
+async function loadEvolver() {
+  const [d, casesData] = await Promise.all([
+    api('/api/evolver'),
+    api('/api/cases?limit=100')
+  ]);
+
+  // Stat grid
+  document.getElementById('evo-stat-grid').innerHTML = `
+    <div class="stat-card"><div class="stat-icon" style="background:${d.connected?'rgba(16,185,129,.1)':'rgba(239,68,68,.1)'};color:${d.connected?'var(--success)':'var(--danger)'}">⊕</div><div class="stat-value">${d.connected?'已连接':'未连接'}</div><div class="stat-label">Evolver GEP</div></div>
+    <div class="stat-card"><div class="stat-icon" style="background:rgba(10,89,247,.1);color:var(--evo)">◇</div><div class="stat-value">${d.harmonyGenes.length}</div><div class="stat-label">Harmony 基因</div></div>
+    <div class="stat-card"><div class="stat-icon" style="background:rgba(16,185,129,.1);color:var(--success)">▤</div><div class="stat-value">${d.harmonyCapsules.length}</div><div class="stat-label">经验胶囊</div></div>
+    <div class="stat-card"><div class="stat-icon" style="background:rgba(139,92,246,.1);color:#8B5CF6">⏳</div><div class="stat-value">${d.harmonyEvents}</div><div class="stat-label">进化事件</div></div>
+    <div class="stat-card"><div class="stat-icon" style="background:rgba(245,158,11,.1);color:var(--warning)">↗</div><div class="stat-value">${d.availableForPromotion}</div><div class="stat-label">待升级案例</div></div>
+  `;
+
+  // Gene cards with network style
+  const geneEl = document.getElementById('gene-list');
+  if (d.harmonyGenes.length === 0) {
+    geneEl.innerHTML = '<div class="empty"><div class="empty-icon">◇</div><div class="empty-text">暂无 Harmony 基因，升级案例即可生成</div></div>';
+  } else {
+    geneEl.innerHTML = d.harmonyGenes.map(g => `
+      <div class="gene-card">
+        <div class="gene-connector"></div>
+        <div class="gene-header"><span class="gene-id">${g.id}</span></div>
+        <div style="font-size:14px;font-weight:600;margin-bottom:4px">${esc(g.summary)}</div>
+        <div class="gene-signals">${(g.signals||[]).slice(0,6).map(s=>`<span class="tag">${s}</span>`).join('')}</div>
+        <div class="gene-src">来源: Harmony DebugCase 升级</div>
+      </div>`).join('');
+  }
+
+  // Eligible list
+  const el2 = document.getElementById('eligible-list');
+  if (d.availableForPromotion === 0) {
+    el2.innerHTML = '<div class="empty"><div class="empty-icon">↗</div><div class="empty-text">暂无符合条件的案例。记录命中 ≥3 次后可手动升级，或运行 promote --auto。</div></div>';
+  } else {
+    const eligible = casesData.cases.filter(dc => (dc.evolver_meta?.matched_count||0) >= 3 && !dc.evolver_meta?.promoted_to_gene);
+    el2.innerHTML = eligible.map(dc => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border-light)">
+        <div><strong style="font-size:14px">${esc(dc.title).slice(0,50)}</strong><br><span style="font-size:11px;color:var(--text-muted)">${dc.dc_id} · 匹配 ${dc.evolver_meta?.matched_count} 次</span></div>
+        <button class="btn btn-evo btn-sm" onclick="promoteCase('${dc.dc_id}')">升级 → Gene</button>
+      </div>`).join('');
+  }
+
+  // Evolution timeline
+  try {
+    const health = await api('/api/health');
+    const agg = health.recent_metrics || {};
+    const tl = document.getElementById('evo-timeline');
+    const events = [
+      { icon: '⬇', title: '数据采集', sub: `${agg.by_type?.scraper_run||0} 次采集运行`, active: (agg.by_type?.scraper_run||0) > 0 },
+      { icon: '⌕', title: '案例搜索', sub: `${agg.by_type?.search_hit||0} 次搜索命中`, active: (agg.by_type?.search_hit||0) > 0 },
+      { icon: '✓', title: '修复验证', sub: `成功率 ${health.feedback_success_rate||'暂无'}`, active: (health.metrics?.feedback_total||0) > 0 },
+      { icon: '◇', title: '基因升级', sub: `${d.harmonyGenes.length} 个活跃基因`, active: d.harmonyGenes.length > 0 },
+      { icon: '●', title: '系统健康', sub: `质量指数 ${Math.round(health.quality_score*100)}%`, active: health.quality_score >= 0.5 },
+    ];
+    tl.innerHTML = events.map(e => `<div class="evo-node ${e.active?'active':''}">
+      <div class="evo-title">${e.icon} ${e.title}</div>
+      <div class="evo-meta">${e.sub}</div>
+    </div>`).join('');
+  } catch(e) {
+    document.getElementById('evo-timeline').innerHTML = '<div class="empty"><div class="empty-text">进化引擎数据加载中...</div></div>';
+  }
+}
+
+async function promoteCase(id) {
+  const r=await fetch('/api/promote/'+id,{method:'POST'});const d=await r.json();
+  if(d.ok){toast(`已升级: ${d.geneId}`);closeModal();loadEvolver();}else{toast('失败: '+d.error);}
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════════════════════
+function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
+
+// ═══════════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════════
+loadDashboard();
+</script>
+</body>
+</html>
