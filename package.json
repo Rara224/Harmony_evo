@@ -1,40 +1,16 @@
 {
-  "name": "harmony_evo",
-  "version": "1.0.0",
-  "description": "HarmonyOS DebugCase Library - scrape, structure, search, and inject bug fixes into evolver GEP",
-  "main": "scripts/debug-case/schema.js",
-  "scripts": {
-    "test": "node scripts/test-seed.js",
-    "test:functional": "node scripts/test-functional.js",
-    "quality": "node scripts/debug-case/quality.js",
-    "search": "node scripts/debug-case/search.js",
-    "dashboard": "node scripts/debug-case/dashboard.js",
-    "dashboard:html": "node scripts/debug-case/dashboard.js --html --output dashboard.html",
-    "scrape": "node scripts/scrapers/huawei-forum.js",
-    "dedupe:candidates": "node scripts/debug-case/dedupe-candidates.js",
-    "extract": "node scripts/scrapers/llm-extractor.js",
-    "promote": "node scripts/debug-case/promote.js",
-    "inject": "node scripts/debug-case/inject.js",
-    "status": "node scripts/debug-case/inject.js --status",
-    "server": "node server/index.js",
-    "client": "node clients/harmony-evo-client/bin/harmony-evo-client.js",
-    "client:self-test": "node clients/harmony-evo-client/bin/harmony-evo-client.js self-test"
-  },
-  "keywords": [
-    "harmonyos",
-    "debug",
-    "gep",
-    "evolver",
-    "huawei",
-    "bug-fix"
-  ],
-  "author": "",
-  "license": "ISC",
+  "name": "@harmony-evo/client",
+  "version": "0.1.0",
+  "description": "Local hook and MCP client for Harmony_Evo asset hub",
   "type": "commonjs",
-  "dependencies": {
-    "cors": "^2.8.6",
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "playwright": "^1.60.0"
+  "bin": {
+    "harmony-evo-client": "bin/harmony-evo-client.js"
+  },
+  "scripts": {
+    "self-test": "node bin/harmony-evo-client.js self-test"
+  },
+  "license": "ISC",
+  "engines": {
+    "node": ">=18"
   }
 }

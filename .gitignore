@@ -16,3 +16,4 @@ assets/debug_cases/candidates/.processed.json
 coverage/
 dist/
 build/
+memory/

@@ -1,93 +1,108 @@
-# Harmony_Evo
+# Harmony_Evo Client
 
-Harmony_Evo 是一个面向 HarmonyOS 开发的共享案例资产中心。服务端管理 DebugCase、采集候选、Gene/Capsule、反馈和事件级开发信号；客户端接入 Claude Code hooks、OpenCode MCP + Plugin hooks 或 CLI，把本地报错脱敏后查询服务端，并把高质量开发事件上传到审核队列。
+This branch contains the standalone client for a Harmony_Evo server.
 
-## 当前状态
+The client can be copied into any HarmonyOS project or installed as an npm package. It provides:
 
-截至 2026-05-26，本机验证状态：
+- Claude Code hooks for prompt/tool/failure context injection.
+- OpenCode MCP tools for active search, status, feedback, and candidate submission.
+- OpenCode plugin hooks for event-level dev-signal capture.
+- CLI commands for manual search, submit, feedback, and status checks.
 
-| 模块 | 状态 |
-| --- | --- |
-| 服务端 | `http://localhost:3456` 正常运行 |
-| DebugCase | 187 条，schema 校验全部通过 |
-| Raw Candidates | 213 条 |
-| Harmony Gene | 3 个，evolver connected |
-| Dev Signals | 40 条事件级信号 |
-| 客户端 | CLI、Claude Code hook、OpenCode MCP + hook 自检通过 |
-| 展示页 | `docs/CLIENT_SHOWCASE.html` 桌面/移动端渲染通过 |
+The full project lives on `main`; the server-only version lives on `server`.
 
-已实测的关键链路：
+## Requirements
 
-- CLI 搜索 `hvigor signingConfigs Failed to find signature file` 命中 `dc_hm_004`。
-- Claude Code `ccb 2.1.888` 新 session 触发真实 `PostToolUseFailure`，上传 `score=0.9`、`candidate_ready=true` 的 dev-signal。
-- OpenCode `1.15.10` 真实 session 通过 MCP 搜索案例，并通过 plugin hook 上传失败构建事件。
+- Node.js 18+
+- A running Harmony_Evo server, for example `http://localhost:3456`
 
-## 启动服务端
+No runtime npm dependencies are required.
+
+## Quick Check
 
 ```bash
-npm run server
+node bin/harmony-evo-client.js self-test
+node bin/harmony-evo-client.js status
+node bin/harmony-evo-client.js search "hvigor signingConfigs Failed to find signature file"
 ```
 
-打开：
+If the server is remote:
+
+```bash
+export HARMONY_EVO_SERVER=http://SERVER_IP:3456
+```
+
+If the server requires upload auth:
+
+```bash
+export HARMONY_EVO_TOKEN=YOUR_TOKEN
+```
+
+## Claude Code Hook
+
+Run this inside the real business project, not inside this client directory:
+
+```bash
+node /absolute/path/to/harmony-evo-client/bin/harmony-evo-client.js install claude --server http://SERVER_IP:3456 --upload-signals
+```
+
+Then start Claude Code normally:
+
+```bash
+ccb
+```
+
+The installer writes:
 
 ```text
-http://localhost:3456
+.claude/settings.local.json
 ```
 
-检查服务端和资产状态：
+Verified locally with `ccb 2.1.888`:
+
+- Session: `60464599-50e8-4ba7-9e77-cc9e66928a8a`
+- Failure: `Failed to find signature file`
+- Top case: `dc_hm_004`
+- Uploaded event: `PostToolUseFailure`, `score=0.9`, `candidate_ready=true`
+
+## OpenCode MCP + Hook
+
+Run this inside the real business project:
 
 ```bash
-npm run client -- status
-curl http://localhost:3456/api/health
+node /absolute/path/to/harmony-evo-client/bin/harmony-evo-client.js install opencode --server http://SERVER_IP:3456 --upload-signals
 ```
 
-## 客户端接入
-
-详细说明见：
-
-- `docs/CLIENT_USAGE.md`
-- `clients/harmony-evo-client/README.md`
-- `dist/harmony-evo-client-standalone/QUICK_START_CN.md`
-
-在业务 HarmonyOS 项目目录安装 Claude Code hooks：
-
-```bash
-node /Users/ra/Downloads/Paper_Repo/Harmony_Evo/clients/harmony-evo-client/bin/harmony-evo-client.js install claude --server http://localhost:3456 --upload-signals
-```
-
-在业务 HarmonyOS 项目目录安装 OpenCode MCP + Hook：
-
-```bash
-node /Users/ra/Downloads/Paper_Repo/Harmony_Evo/clients/harmony-evo-client/bin/harmony-evo-client.js install opencode --server http://localhost:3456 --upload-signals
-```
-
-手动搜索：
-
-```bash
-npm run client -- search "hvigor signingConfigs Failed to find signature file"
-```
-
-## 独立客户端包
-
-可复制给别人使用的客户端包在：
+The installer writes:
 
 ```text
-dist/harmony-evo-client-standalone/
-dist/harmony-evo-client-standalone-0.1.0.tar.gz
+opencode.jsonc
+.opencode/plugins/harmony-evo.js
 ```
 
-对方只需要 Node.js 18+ 和服务端地址即可使用。
+MCP tools:
 
-## 验证命令
+- `harmony_search`
+- `harmony_status`
+- `harmony_submit_candidate`
+- `harmony_feedback`
+
+Plugin hooks listen to chat messages, command execution, tool execution, failure events, and system-context transform.
+
+## Package Files
+
+- `harmony-evo-client-0.1.0.tgz`: npm package.
+- `harmony-evo-client-standalone-0.1.0.tar.gz`: copyable standalone archive.
+- `examples/`: Claude/OpenCode/MCP config examples.
+- `QUICK_START_CN.md` and `USAGE_CLIENT.md`: usage docs.
+
+## Privacy Defaults
+
+Uploads are opt-in:
 
 ```bash
-npm run client:self-test
-npm run test:functional
-npm test
+HARMONY_EVO_UPLOAD_SIGNALS=false
+HARMONY_EVO_AUTO_SUBMIT=false
 ```
 
-当前已知边界：
-
-- 案例库运行可用，但仍有 539 个质量提示，主要是低置信度、泛分类、待人工验证和 thin fix。
-- 自进化链路已经具备 dev-signal、submission、feedback、Gene promotion 和 Capsule 写入能力，但 `dev-signals -> DebugCase -> Capsule` 仍需要审核/LLM 结构化后才能完全自动化。
-- 默认不会上传候选案例；只有显式开启 `--upload-signals` 或 `--auto-submit` 才会上报。
+The client redacts authorization headers, API keys, passwords, cookies, email, phone numbers, private IPs, and signing file paths before upload.
