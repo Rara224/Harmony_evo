@@ -16,9 +16,7 @@
     "promote": "node scripts/debug-case/promote.js",
     "inject": "node scripts/debug-case/inject.js",
     "status": "node scripts/debug-case/inject.js --status",
-    "server": "node server/index.js",
-    "client": "node clients/harmony-evo-client/bin/harmony-evo-client.js",
-    "client:self-test": "node clients/harmony-evo-client/bin/harmony-evo-client.js self-test"
+    "server": "node server/index.js"
   },
   "keywords": [
     "harmonyos",

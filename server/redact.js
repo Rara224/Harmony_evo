@@ -47,15 +47,6 @@ function redactText(input, opts = {}) {
   };
 }
 
-function compactText(input, max = 1000) {
-  return String(input || '')
-    .replace(/\r/g, '')
-    .replace(/[ \t]+/g, ' ')
-    .replace(/\n{3,}/g, '\n\n')
-    .trim()
-    .slice(0, max);
-}
-
 function mergeRedactionReports(...reports) {
   const counts = new Map();
   const hashes = [];
@@ -84,4 +75,4 @@ function redactFields(fields, opts = {}) {
   return { fields: out, report: mergeRedactionReports(...reports) };
 }
 
-module.exports = { redactText, redactFields, mergeRedactionReports, compactText, REDACTION_RULES };
+module.exports = { redactText, redactFields, mergeRedactionReports, REDACTION_RULES };

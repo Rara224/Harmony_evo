@@ -42,7 +42,7 @@ const CAPSULES_PATH = path.resolve(ROOT, '..', 'evolver-main', 'assets', 'gep', 
 
 const { incrementMatchCount } = require('../scripts/debug-case/promote');
 const { record: metricsRecord } = require('../scripts/debug-case/metrics');
-const { redactFields, mergeRedactionReports } = require('../clients/harmony-evo-client/src/redact');
+const { redactFields, mergeRedactionReports } = require('./redact');
 
 let scrapeJob = null;
 

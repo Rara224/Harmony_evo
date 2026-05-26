@@ -1,93 +1,75 @@
-# Harmony_Evo
+# Harmony_Evo Server
 
-Harmony_Evo 是一个面向 HarmonyOS 开发的共享案例资产中心。服务端管理 DebugCase、采集候选、Gene/Capsule、反馈和事件级开发信号；客户端接入 Claude Code hooks、OpenCode MCP + Plugin hooks 或 CLI，把本地报错脱敏后查询服务端，并把高质量开发事件上传到审核队列。
+This branch contains the server-side Harmony_Evo asset hub.
 
-## 当前状态
+It manages HarmonyOS DebugCase assets, scraped raw candidates, dev-signal review queues, feedback, and GEP promotion into Gene/Capsule assets. Client adapters live on the `client` branch; the full monorepo lives on `main`.
 
-截至 2026-05-26，本机验证状态：
+## Current Snapshot
 
-| 模块 | 状态 |
+| Item | Status |
 | --- | --- |
-| 服务端 | `http://localhost:3456` 正常运行 |
-| DebugCase | 187 条，schema 校验全部通过 |
-| Raw Candidates | 213 条 |
-| Harmony Gene | 3 个，evolver connected |
-| Dev Signals | 40 条事件级信号 |
-| 客户端 | CLI、Claude Code hook、OpenCode MCP + hook 自检通过 |
-| 展示页 | `docs/CLIENT_SHOWCASE.html` 桌面/移动端渲染通过 |
+| Local API | `http://localhost:3456` |
+| DebugCases | 187 valid cases |
+| Raw Candidates | 213 |
+| Dev Signals | 40 |
+| Harmony Genes | 3 |
+| Evolver | connected |
 
-已实测的关键链路：
-
-- CLI 搜索 `hvigor signingConfigs Failed to find signature file` 命中 `dc_hm_004`。
-- Claude Code `ccb 2.1.888` 新 session 触发真实 `PostToolUseFailure`，上传 `score=0.9`、`candidate_ready=true` 的 dev-signal。
-- OpenCode `1.15.10` 真实 session 通过 MCP 搜索案例，并通过 plugin hook 上传失败构建事件。
-
-## 启动服务端
+## Start
 
 ```bash
+npm install
 npm run server
 ```
 
-打开：
+Open:
 
 ```text
 http://localhost:3456
 ```
 
-检查服务端和资产状态：
+## Verify
 
 ```bash
-npm run client -- status
-curl http://localhost:3456/api/health
-```
-
-## 客户端接入
-
-详细说明见：
-
-- `docs/CLIENT_USAGE.md`
-- `clients/harmony-evo-client/README.md`
-- `dist/harmony-evo-client-standalone/QUICK_START_CN.md`
-
-在业务 HarmonyOS 项目目录安装 Claude Code hooks：
-
-```bash
-node /Users/ra/Downloads/Paper_Repo/Harmony_Evo/clients/harmony-evo-client/bin/harmony-evo-client.js install claude --server http://localhost:3456 --upload-signals
-```
-
-在业务 HarmonyOS 项目目录安装 OpenCode MCP + Hook：
-
-```bash
-node /Users/ra/Downloads/Paper_Repo/Harmony_Evo/clients/harmony-evo-client/bin/harmony-evo-client.js install opencode --server http://localhost:3456 --upload-signals
-```
-
-手动搜索：
-
-```bash
-npm run client -- search "hvigor signingConfigs Failed to find signature file"
-```
-
-## 独立客户端包
-
-可复制给别人使用的客户端包在：
-
-```text
-dist/harmony-evo-client-standalone/
-dist/harmony-evo-client-standalone-0.1.0.tar.gz
-```
-
-对方只需要 Node.js 18+ 和服务端地址即可使用。
-
-## 验证命令
-
-```bash
-npm run client:self-test
-npm run test:functional
 npm test
+npm run test:functional
+npm run quality
+npm run status
 ```
 
-当前已知边界：
+## Main APIs
 
-- 案例库运行可用，但仍有 539 个质量提示，主要是低置信度、泛分类、待人工验证和 thin fix。
-- 自进化链路已经具备 dev-signal、submission、feedback、Gene promotion 和 Capsule 写入能力，但 `dev-signals -> DebugCase -> Capsule` 仍需要审核/LLM 结构化后才能完全自动化。
-- 默认不会上传候选案例；只有显式开启 `--upload-signals` 或 `--auto-submit` 才会上报。
+- `GET /api/stats`
+- `GET /api/search?q=...`
+- `GET /api/cases`
+- `GET /api/cases/:id`
+- `POST /api/cases/:id/match`
+- `POST /api/feedback/:id`
+- `GET /api/scrape/status`
+- `POST /api/scrape`
+- `GET /api/evolver`
+- `POST /api/promote/:id`
+- `POST /api/submissions`
+- `GET /api/submissions`
+- `POST /api/dev-signals`
+- `GET /api/dev-signals`
+- `GET /api/health`
+
+## Documentation
+
+- `USAGE_SERVER.md`: server operation guide.
+- `PRODUCT.md`: product design and roadmap.
+- `docs/HARMONY_EVO_STATUS_REVIEW.md`: status review.
+- `docs/SERVER_CLIENT_ASSET_HUB_PLAN.md`: server/client asset hub plan.
+
+## Data Safety
+
+Runtime credentials are intentionally not tracked:
+
+- `.env`
+- `.forum_session_storage.json`
+- `opencode.jsonc`
+- `.opencode/`
+- `node_modules/`
+
+Uploaded submissions and dev-signals are stored as review queues and are not automatically promoted into the official case library.
